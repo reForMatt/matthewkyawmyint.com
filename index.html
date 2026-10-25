@@ -3,333 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Matthew Kyawmyint: Operating Manual</title>
-<meta name="description" content="Founding engineer building AI agents for regulated industries. Davis, CA, remote.">
+<title>Matthew Kyawmyint</title>
+<meta name="description" content="Founding engineer in Davis, California, building AI for colleges and their students.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Matthew Kyawmyint">
+<meta property="og:description" content="Founding engineer in Davis, California, building AI for colleges and their students.">
+<meta property="og:url" content="https://matthewkyawmyint.com/">
+<meta property="og:image" content="https://matthewkyawmyint.com/avatar.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:,">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#eceef0; --grid:#d3d7dc; --ink:#0b0b0b; --sub:#3d4147; --acc:#ff5a00; }
+  :root { --ink:#111; --soft:#4a4a4a; --link:#1d3fbb; }
   * { box-sizing:border-box; }
+  html { background:#fff; }
   body {
-    margin:0; background-color:var(--bg); color:var(--ink);
-    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-    background-size:24px 24px;
-    font:400 17px/1.5 Archivo,"Arial Narrow",Arial,sans-serif; font-stretch:100%;
+    margin:0; background:#fff; color:var(--ink);
+    font:400 1.0625rem/1.6 "Atkinson Hyperlegible Next", system-ui, sans-serif;
   }
-  main { max-width:960px; margin:0 auto; padding:24px 20px 56px; }
-  .sheet { background:var(--bg); border:3px solid var(--ink); }
-  header { display:flex; justify-content:space-between; gap:12px; border-bottom:3px solid var(--ink); font-weight:700; font-stretch:125%; font-size:.75rem; }
-  header span { padding:8px 14px; }
-  header span:last-child { background:var(--acc); }
-  .hero { padding:28px 20px 8px; }
-  h1 { margin:0; font-weight:900; font-stretch:125%; font-size:clamp(2rem,8.6vw,5.4rem); line-height:.95; text-transform:uppercase; letter-spacing:-.02em; }
-  .say { margin:10px 0 0; font-weight:600; font-stretch:75%; font-size:1.1rem; color:var(--sub); }
-  .lede { max-width:46ch; margin:18px 0 0; font-size:1.2rem; font-weight:500; }
-  .where { margin:10px 0 0; font-weight:700; }
-  figure { margin:0; padding:8px 12px 12px; }
-  /* below ~600px the diagram text drops under 12px, so scroll it inside its frame instead */
-  @media (max-width:600px) { figure { overflow-x:auto; } figure svg { min-width:600px; } }
-  svg { display:block; width:100%; height:auto; }
-  svg text { font-family:Archivo,Arial,sans-serif; fill:#0b0b0b; }
-  .sec { border-top:3px solid var(--ink); padding:22px 20px 26px; }
-  h2 { margin:0 0 16px; font-weight:900; font-stretch:125%; font-size:1.3rem; text-transform:uppercase; display:flex; align-items:center; gap:10px; }
-  h2::before { content:""; width:18px; height:18px; background:var(--acc); border:2px solid var(--ink); }
-  ol.feat { list-style:none; margin:0; padding:0; display:grid; gap:0; }
-  ol.feat li { display:grid; grid-template-columns:48px 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--ink); }
-  ol.feat li:first-child { border-top:0; padding-top:0; }
-  .n { width:40px; height:40px; border-radius:50%; background:var(--acc); border:2px solid var(--ink); display:grid; place-items:center; font-weight:900; font-size:1.2rem; }
-  ol.feat h3 { margin:0 0 4px; font-weight:800; font-stretch:112%; font-size:1.1rem; }
-  ol.feat p { margin:0; max-width:60ch; }
-  table { width:100%; border-collapse:collapse; }
-  th,td { text-align:left; padding:9px 10px; border:1px solid var(--ink); vertical-align:top; }
-  th { background:var(--ink); color:#fff; font-weight:700; font-stretch:112%; font-size:.85rem; text-transform:uppercase; }
-  td:first-child { white-space:nowrap; font-weight:800; font-stretch:112%; width:1%; }
-  tr.cur td { background:var(--acc); }
-  .sup p { margin:0 0 6px; }
-  a { color:var(--ink); font-weight:800; text-decoration-thickness:3px; text-decoration-color:var(--acc); text-underline-offset:4px; }
-  a:hover,a:focus-visible { background:var(--acc); text-decoration:none; outline:none; }
-  footer { border-top:3px solid var(--ink); padding:10px 20px; font-size:.8rem; font-weight:600; font-stretch:112%; }
-  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-  .ctl { display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; margin:0 0 14px; }
-  button { font:800 1rem/1 Archivo,Arial,sans-serif; font-stretch:112%; text-transform:uppercase; color:var(--ink); background:var(--acc); border:3px solid var(--ink); padding:13px 18px; cursor:pointer; min-height:48px; }
-  button:focus-visible,input:focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
-  label { display:inline-flex; align-items:center; gap:10px; font-weight:700; min-height:48px; cursor:pointer; }
-  input[type=checkbox] { width:28px; height:28px; margin:0; accent-color:var(--ink); }
-  .cap { margin:0 0 14px; font-weight:600; font-stretch:75%; font-size:1.05rem; color:var(--sub); }
-  table.res td:first-child { white-space:normal; width:auto; font-weight:700; }
-  table.res td { overflow-wrap:anywhere; }
-  td.pass,td.fail { font-weight:900; font-stretch:112%; }
-  td.pass { background:var(--acc); }
-  td.fail { background:var(--ink); color:#fff; }
-  #summary { margin:12px 0 0; font-weight:800; font-stretch:112%; min-height:1.5em; }
-  ol.proc li p { max-width:56ch; }
-  @media (max-width:560px){
-    main { padding:12px 10px 32px; }
-    td:first-child { white-space:normal; width:34%; }
-    th,td { padding:8px 7px; font-size:.95rem; }
-  }
+  .page { max-width:36rem; margin:0 auto; padding:56px 20px 72px; }
+  a { color:var(--link); text-decoration-thickness:1px; text-underline-offset:.18em; }
+  a:hover { text-decoration-thickness:2px; }
+  a:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+
+  .me { display:block; width:88px; height:88px; border-radius:6px; margin:0 0 24px; }
+  h1 { margin:0 0 8px; font-size:1.5rem; line-height:1.25; font-weight:600; }
+  h2 { margin:48px 0 8px; font-size:1.0625rem; font-weight:600; }
+  p { margin:0 0 14px; }
+
+  .jobs { list-style:none; margin:0; padding:0; }
+  .jobs li { margin:0 0 14px; }
+  .jobs .role { display:block; color:var(--soft); }
+
+  footer { margin-top:56px; color:var(--soft); font-size:.9375rem; }
+
+  @media (max-width:480px) { .page { padding-top:36px; } }
 </style>
 </head>
 <body>
-<main>
-<div class="sheet">
-  <header><span>Operating manual</span><span>Read before use</span></header>
+<main class="page">
 
-  <div class="hero" data-provenance="model" data-reviewed="false">
-    <h1>Matthew<br>Kyawmyint</h1>
-    <p class="say">Pronounced &ldquo;Jaw-me-int&rdquo;.</p>
-    <p class="say" id="prov">Disclosure: copy drafted with a model from his résumé, review pending.</p>
-    <p class="lede">Founding engineer. Builds AI agents for regulated industries, most recently as the only engineer taking a voice and chat agent from zero to production with universities.</p>
-    <p class="where">Location: Davis, California. Operates remotely.</p>
-  </div>
+  <header>
+    <img class="me" src="avatar.jpg" width="88" height="88" alt="Matthew Kyawmyint, smiling, outdoors under trees">
+    <h1>Matthew Kyawmyint</h1>
+    <p>Hi, I'm Matthew (it's pronounced "Jaw-me-int"). I'm a founding engineer at Protagonist, building AI for colleges and their students. Before this I helped build and scale products at AWS and a variety of startups. I live in Davis, California, and you can reach me at <a href="mailto:hi@matthewkyawmyint.com">hi@matthewkyawmyint.com</a>.</p>
+    <p>Outside work I take my family camping at California state parks, play strategy games like Crusader Kings, and build small tools for myself, such as a workout log and a script that watches for concert tickets near Davis.</p>
+  </header>
 
-  <figure>
-    <svg viewBox="0 0 760 250" role="img" aria-labelledby="dt dd">
-      <title id="dt">Signal flow of a call through the agent</title>
-      <desc id="dd">A caller connects to an agent, then a safety gate, then a human handoff. Callout 1 marks the human handoff, callout 2 marks the ship gate under the agent, callout 3 marks the safety gate.</desc>
-      <g fill="none" stroke="#0b0b0b" stroke-width="3">
-        <rect x="10" y="70" width="140" height="70" fill="#fff"/>
-        <rect x="215" y="70" width="140" height="70" fill="#fff"/>
-        <rect x="420" y="70" width="140" height="70" fill="#ff5a00"/>
-        <rect x="610" y="70" width="140" height="70" fill="#fff"/>
-        <path d="M150 105H215M355 105H420M560 105H610"/>
-        <path d="M205 98l10 7-10 7M410 98l10 7-10 7M600 98l10 7-10 7" stroke-width="3"/>
-        <path d="M285 140V195H340" stroke-dasharray="6 5"/>
-        <path d="M490 70V35M680 70V35" stroke-width="2"/>
-        <rect x="360" y="178" width="130" height="34" fill="#fff"/>
-        <path d="M10 236H750M10 229V243M750 229V243" stroke-width="1.5"/>
-      </g>
-      <g font-weight="800" font-size="25" text-anchor="middle">
-        <text x="80" y="113">CALLER</text>
-        <text x="285" y="113">AGENT</text>
-        <text x="490" y="105">SAFETY</text>
-        <text x="490" y="130">GATE</text>
-        <text x="680" y="105">HUMAN</text>
-        <text x="680" y="130">HANDOFF</text>
-        <text x="425" y="202" font-size="20">SHIP GATE</text>
-      </g>
-      <g stroke="#0b0b0b" stroke-width="3" fill="#ff5a00">
-        <circle cx="680" cy="25" r="20"/>
-        <circle cx="490" cy="25" r="20"/>
-        <circle cx="560" cy="195" r="20" fill="#ff5a00"/>
-      </g>
-      <g font-weight="900" font-size="24" text-anchor="middle">
-        <text x="680" y="34">1</text><text x="560" y="204">2</text><text x="490" y="34">3</text>
-      </g>
-      <path d="M490 195H540" stroke="#0b0b0b" stroke-width="2"/>
-            <text x="10" y="222" font-size="15" font-weight="600" style="fill:#3d4147">FIG. 1 SIGNAL FLOW</text>
-    </svg>
-  </figure>
-
-  <section data-provenance="model" data-reviewed="false" class="sec" aria-labelledby="f">
-    <h2 id="f">Features</h2>
-    <ol class="feat">
-      <li><span class="n" aria-hidden="true">1</span><div><h3>Voice agents with a human in the loop</h3><p>A phone agent on OpenAI Realtime and Twilio that hands callers to a university contact center by attended transfer, and plays its disclosure before any call proceeds.</p></div></li>
-      <li><span class="n" aria-hidden="true">2</span><div><h3>Evals as a ship gate</h3><p>Mutation-tested evals (each check proven to catch a planted regression), a bot-to-bot voice eval, and a deploy gate that blocks changes to safety-critical paths without a passing receipt.</p></div></li>
-      <li><span class="n" aria-hidden="true">3</span><div><h3>Safety that fails closed</h3><p>Crisis detection that pages a person, guards on regulated figures, cross-tenant redaction, and governance rules wired into every prompt with a CI check. Passed a HECVAT security review.</p></div></li>
-    </ol>
+  <section aria-labelledby="w">
+    <h2 id="w">Work</h2>
+    <ul class="jobs">
+      <li><a href="https://getprotagonist.com">Protagonist</a> at Humanist Venture Studio, 2025 to now<span class="role">Founding engineer.</span></li>
+      <li>Workmaps, 2024 to 2025<span class="role">Founding engineer across frontend, backend, AI features and data pipelines, making job searching easier and more personal.</span></li>
+      <li>Everest AI, 2022 to 2024<span class="role">Senior engineer. Led a team building web and mobile products with AI features, and revamped our stack and deploy tooling.</span></li>
+      <li>Amazon Web Services, 2017 to 2022<span class="role">Software engineer on the AWS Console, backend and React. Started as an intern building a machine-learning recommendation feature for DynamoDB and RDS users.</span></li>
+    </ul>
+    <p>Also contract work for early-stage AI startups, the term-life flows at Ethos, and <a href="https://parkjapa.com">Japa</a>, a smart-parking startup I cofounded at UC Davis. Proud to see it still helping people park today.</p>
   </section>
 
-  <section data-provenance="model" data-reviewed="false" class="sec" aria-labelledby="t">
-    <h2 id="t">Self-test</h2>
-    <p class="cap">Planted regressions must turn a check red. That is how a check proves it works.</p>
-    <div class="ctl">
-      <button type="button" id="run">Run self-test</button>
-      <label><input type="checkbox" id="fault"> Fault injection</label>
-    </div>
-    <noscript><p>The self-test needs JavaScript. Everything else on this page does not.</p></noscript>
-    <table class="res" id="results">
-      <caption class="sr">Self-test results</caption>
-      <thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Measured</th></tr></thead>
-      <tbody><tr id="idle"><th scope="row">Not yet run</th><td>&ndash;</td><td>Press the run button.</td></tr></tbody>
-    </table>
-    <p id="summary" role="status" aria-live="polite"></p>
+  <section aria-labelledby="c">
+    <h2 id="c">Say hi</h2>
+    <p>If you're into EdTech, AI, or just want to talk about building meaningful products, email me at <a href="mailto:hi@matthewkyawmyint.com">hi@matthewkyawmyint.com</a>. I'm also on <a href="https://www.linkedin.com/in/matthewkyawmyint">LinkedIn</a>.</p>
   </section>
 
-  <section data-provenance="model" data-reviewed="false" class="sec" aria-labelledby="r">
-    <h2 id="r">Revision history</h2>
-    <table>
-      <thead><tr><th scope="col">Rev.</th><th scope="col">Change</th></tr></thead>
-      <tbody>
-        <tr class="cur"><td>2025 &ndash; now</td><td>Protagonist. Founding Engineer</td></tr>
-        <tr><td>2025</td><td>Contract engineering, early-stage startups</td></tr>
-        <tr><td>2024 &ndash; 2025</td><td>Workmaps. Founding Software Engineer</td></tr>
-        <tr><td>2022 &ndash; 2024</td><td>Everest AI. Senior Software Engineer</td></tr>
-        <tr><td>2022</td><td>Ethos Life. Software Engineer</td></tr>
-        <tr><td>2018 &ndash; 2022</td><td>Amazon Web Services. Software Development Engineer</td></tr>
-        <tr><td>Earlier</td><td>Japa. Cofounder (smart parking, UC Davis)</td></tr>
-      </tbody>
-    </table>
-  </section>
+  <footer>
+    <p>One hand-written HTML file with no scripts or trackers. It can <a href="checks/">check itself</a>.</p>
+  </footer>
 
-  <section data-provenance="model" data-reviewed="false" class="sec" aria-labelledby="p">
-    <h2 id="p">Operating procedure: working with Matthew</h2>
-    <ol class="feat proc">
-      <li><span class="n" aria-hidden="true">1</span><div><h3>Send the problem in writing</h3><p>Written context comes first. State the problem, the constraints and what has been tried.</p></div></li>
-      <li><span class="n" aria-hidden="true">2</span><div><h3>Define success and failure before building</h3><p>Scope the success metric. List the failure modes. Both are agreed before work starts.</p></div></li>
-      <li><span class="n" aria-hidden="true">3</span><div><h3>Ship the smallest live version</h3><p>Release behind evals. Expand only after the evals hold.</p></div></li>
-      <li><span class="n" aria-hidden="true">4</span><div><h3>Fail closed on safety-critical paths</h3><p>A safety-critical path that cannot decide stops, and pages a human.</p></div></li>
-      <li><span class="n" aria-hidden="true">5</span><div><h3>Hand off with documentation</h3><p>The system is documented so that it runs without him.</p></div></li>
-    </ol>
-  </section>
-
-  <section data-provenance="model" data-reviewed="false" class="sec sup" aria-labelledby="s">
-    <h2 id="s">Support</h2>
-    <p><a href="mailto:hi@matthewkyawmyint.com">hi@matthewkyawmyint.com</a></p>
-    <p><a href="https://www.linkedin.com/in/matthewkyawmyint">linkedin.com/in/matthewkyawmyint</a></p>
-  </section>
-
-  <footer>&copy; 2026 Matthew Kyawmyint</footer>
-</div>
 </main>
-<script>
-(function () {
-  var runBtn = document.getElementById('run'), fault = document.getElementById('fault');
-  var tbody = document.querySelector('#results tbody'), summary = document.getElementById('summary');
-  var token = 0, FAULT_SRC = 'https://www.googletagmanager.com/gtag/js';
-
-  function parse(c) {
-    var m = /rgba?\(([^)]+)\)/.exec(c); if (!m) return null;
-    var p = m[1].split(/[ ,\/]+/).filter(Boolean).map(parseFloat);
-    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
-  }
-  function lum(c) {
-    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
-  }
-  function over(top, bot) {
-    return { r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 };
-  }
-  function effBg(el) {
-    var layers = [], n = el;
-    while (n && n.nodeType === 1) {
-      var c = parse(getComputedStyle(n).backgroundColor);
-      if (c && c.a > 0) { layers.push(c); if (c.a === 1) break; }
-      n = n.parentElement;
-    }
-    var base = layers.length && layers[layers.length - 1].a === 1 ? layers.pop() : { r: 255, g: 255, b: 255, a: 1 };
-    while (layers.length) base = over(layers.pop(), base);
-    return base;
-  }
-  function kb(n) { return (n / 1024).toFixed(1) + ' KB'; }
-
-  // When Matthew rewrites a block he sets data-provenance="matthew" data-reviewed="true"; the line under his name and this check update themselves.
-  function provenance() {
-    var blocks = document.querySelectorAll('.hero, .sec'), labeled = 0, mine = 0, pending = 0;
-    blocks.forEach(function (b) {
-      if (!b.hasAttribute('data-provenance')) return;
-      labeled++;
-      if (b.getAttribute('data-provenance') === 'matthew') mine++;
-      if (b.getAttribute('data-reviewed') !== 'true') pending++;
-    });
-    return { total: blocks.length, labeled: labeled, mine: mine, pending: pending };
-  }
-  var pv = provenance();
-  document.getElementById('prov').textContent = 'Disclosure: ' + pv.mine + ' of ' + pv.total + ' blocks hand-written, ' +
-    (pv.total - pv.mine) + ' drafted with a model' + (pv.pending ? ', ' + pv.pending + ' awaiting his review.' : '.');
-
-  var checks = [
-    ['Provenance disclosed on every block', function () {
-      var p = provenance();
-      return [p.labeled === p.total, p.mine + ' of ' + p.total + ' hand-written; ' + p.pending + ' review pending'];
-    }],
-    ['Page weight (budget 100 KB, fonts excluded)', function () {
-      var es = performance.getEntriesByType('navigation').concat(performance.getEntriesByType('resource'));
-      var own = 0, fonts = 0;
-      es.forEach(function (e) {
-        var isFont = /fonts\.(gstatic|googleapis)\.com|\.woff2?(\?|$)/.test(e.name);
-        // a cached (304) response has transferSize ~ headers only, so take the body size when larger
-        var size = Math.max(e.transferSize || 0, e.encodedBodySize || 0);
-        if (isFont) fonts += size; else own += size;
-      });
-      // no measurement is a failure, not a pass
-      if (!own) return [false, 'no measurement (served from file:// or timing blocked)'];
-      return [own <= 102400, kb(own) + '. Fonts: ' + (fonts ? kb(fonts) : 'n/a')];
-    }],
-    ['Third-party scripts (must be 0)', function () {
-      var n = 0, list = [];
-      document.querySelectorAll('script[src]').forEach(function (s) {
-        var o; try { o = new URL(s.getAttribute('src'), location.href).origin; } catch (e) { o = '?'; }
-        if (o !== location.origin) { n++; list.push(new URL(s.src).hostname); }
-      });
-      return [n === 0, n + (n ? ' (' + list.join(', ') + ')' : '')];
-    }],
-    ['Tracker requests (must be 0)', function () {
-      var re = /google-analytics|googletagmanager|segment\.(io|com)|hotjar|posthog|mixpanel/i;
-      var n = performance.getEntriesByType('resource').filter(function (e) { return re.test(e.name); }).length;
-      return [n === 0, String(n)];
-    }],
-    ['Text contrast (WCAG AA)', function () {
-      var min = Infinity, bad = 0, seen = 0;
-      document.body.querySelectorAll('*').forEach(function (el) {
-        if (/^(SCRIPT|STYLE|NOSCRIPT|TITLE|DESC)$/i.test(el.tagName)) return;
-        var own = Array.prototype.some.call(el.childNodes, function (k) { return k.nodeType === 3 && k.nodeValue.trim(); });
-        if (!own || !el.getClientRects().length) return;
-        var cs = getComputedStyle(el); if (cs.visibility !== 'visible') return;
-        var fg = parse(el instanceof SVGElement ? cs.fill : cs.color); if (!fg) return;
-        var bg = effBg(el); fg = over(fg, bg);
-        var l1 = lum(fg), l2 = lum(bg), r = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-        var px = parseFloat(cs.fontSize), large = px >= 24 || (px >= 18.66 && parseInt(cs.fontWeight, 10) >= 700);
-        seen++; if (r < min) min = r; if (r < (large ? 3 : 4.5)) bad++;
-      });
-      return [bad === 0, 'min ' + min.toFixed(2) + ':1 across ' + seen + ' elements' + (bad ? ', ' + bad + ' below AA' : '')];
-    }],
-    ['Images have alt text', function () {
-      var imgs = document.querySelectorAll('img'), svgs = document.querySelectorAll('svg[role=img]'), bad = 0;
-      imgs.forEach(function (i) { if (!i.hasAttribute('alt')) bad++; });
-      svgs.forEach(function (s) { if (!(s.getAttribute('aria-label') || s.querySelector('title'))) bad++; });
-      return [bad === 0, imgs.length + ' img, ' + svgs.length + ' svg, ' + bad + ' missing'];
-    }],
-    ['Links have accessible names', function () {
-      var as = document.querySelectorAll('a[href]'), bad = 0;
-      as.forEach(function (a) { if (!(a.textContent.trim() || a.getAttribute('aria-label'))) bad++; });
-      return [bad === 0, as.length + ' links, ' + bad + ' unnamed'];
-    }],
-    ['Exactly one h1', function () {
-      var n = document.querySelectorAll('h1').length; return [n === 1, String(n)];
-    }],
-    ['Works without JavaScript', function () {
-      var made = document.querySelectorAll('[data-js-created]'), stray = 0;
-      made.forEach(function (e) { if (!(e.tagName === 'TR' && tbody.contains(e))) stray++; });
-      return [stray === 0, 'all content is static HTML; script adds only result rows (' + stray + ' other elements)'];
-    }]
-  ];
-
-  function setFault(on) {
-    var f = document.querySelector('footer'), s = document.querySelector('script[data-fault]');
-    f.style.color = on ? '#9aa0a6' : '';
-    if (on && !s) {
-      s = document.createElement('script'); s.type = 'text/plain'; s.setAttribute('data-fault', ''); s.src = FAULT_SRC;
-      document.body.appendChild(s);
-    } else if (!on && s) s.remove();
-  }
-  function addRow(name, ok, val) {
-    var tr = document.createElement('tr'); tr.setAttribute('data-js-created', '');
-    var th = document.createElement('th'); th.scope = 'row'; th.textContent = name;
-    var r = document.createElement('td'); r.className = ok ? 'pass' : 'fail'; r.textContent = ok ? 'PASS' : 'FAIL';
-    var v = document.createElement('td'); v.textContent = val;
-    tr.append(th, r, v); tbody.appendChild(tr);
-  }
-  async function run() {
-    var me = ++token, still = document.getElementById('idle'); if (still) still.remove();
-    tbody.textContent = ''; summary.textContent = '';
-    var calm = matchMedia('(prefers-reduced-motion: reduce)').matches, ms = 0, pass = 0;
-    for (var i = 0; i < checks.length; i++) {
-      if (me !== token) return;
-      var t0 = performance.now(), res;
-      try { res = checks[i][1](); } catch (e) { res = [false, 'error: ' + e.message]; }
-      ms += performance.now() - t0;
-      if (res[0]) pass++;
-      addRow(checks[i][0], res[0], res[1]);
-      if (!calm) await new Promise(function (ok) { setTimeout(ok, 260); });
-    }
-    if (me !== token) return;
-    summary.textContent = 'Total ' + checks.length + ' checks, ' + pass + ' passed, ' + (checks.length - pass) + ' failed, ' + ms.toFixed(1) + ' ms.';
-  }
-  runBtn.addEventListener('click', run);
-  fault.addEventListener('change', function () { setFault(fault.checked); run(); });
-})();
-</script>
 </body>
 </html>

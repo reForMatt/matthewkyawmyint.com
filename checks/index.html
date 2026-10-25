@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-test · Matthew Kyawmyint</title>
+<meta name="description" content="Checks that run in your browser against matthewkyawmyint.com, with a switch that plants two bugs.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#111; --soft:#4a4a4a; --link:#1d3fbb; --fail:#a1001c; }
+  * { box-sizing:border-box; }
+  html { background:#fff; }
+  body {
+    margin:0; background:#fff; color:var(--ink);
+    font:400 1.0625rem/1.6 "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  }
+  .page { max-width:36rem; margin:0 auto; padding:56px 20px 72px; }
+  a { color:var(--link); text-decoration-thickness:1px; text-underline-offset:.18em; }
+  a:hover { text-decoration-thickness:2px; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+  h1 { margin:0 0 8px; font-size:1.5rem; line-height:1.25; font-weight:600; }
+  p { margin:0 0 14px; }
+  .quiet { color:var(--soft); font-size:.9375rem; }
+
+  .ctl { display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; margin:18px 0 8px; }
+  button {
+    font:inherit; font-weight:600; color:#fff; background:var(--ink);
+    border:0; border-radius:6px; padding:8px 16px; cursor:pointer;
+  }
+  label { cursor:pointer; }
+  input[type=checkbox] { width:1.05em; height:1.05em; margin:0 6px 0 0; vertical-align:-.12em; accent-color:var(--ink); }
+  table { width:100%; border-collapse:collapse; margin:12px 0 4px; font-size:.9375rem; }
+  th, td { text-align:left; vertical-align:top; padding:5px 12px 5px 0; font-weight:400; }
+  thead th { color:var(--soft); }
+  td.pass { white-space:nowrap; }
+  td.fail { white-space:nowrap; color:var(--fail); font-weight:600; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  /* laid out (so contrast can be measured) but off screen */
+  #home { position:absolute; left:-10000px; top:0; width:576px; height:900px; border:0; }
+
+  @media (max-width:480px) {
+    .page { padding-top:36px; }
+    table, thead, tbody, tr, th, td { display:block; }
+    thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    tr { padding:6px 0; }
+    th, td { padding:0; }
+    td { display:inline; }
+    td + td { margin-left:8px; color:var(--soft); }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <p><a href="../">Matthew Kyawmyint</a></p>
+  <h1>Self-test</h1>
+  <p>These checks run in your browser against <a href="../">the home page</a>. A check only counts if it can fail, so the switch plants two bugs on that page: a footer at low contrast and a tracking script tag (it never loads). The contrast and third-party script checks should turn red.</p>
+  <div class="ctl">
+    <button type="button" id="run">Run the checks</button>
+    <label><input type="checkbox" id="fault" autocomplete="off">Plant two bugs</label>
+  </div>
+  <noscript><p>The checks need JavaScript. The home page doesn't.</p></noscript>
+  <table id="results">
+    <caption class="sr">Results of the checks</caption>
+    <thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Measured</th></tr></thead>
+    <tbody><tr id="idle"><td colspan="3" class="quiet">Not run yet.</td></tr></tbody>
+  </table>
+  <p id="summary" class="quiet" role="status" aria-live="polite"></p>
+</main>
+<iframe id="home" src="../" title="Home page under test" tabindex="-1" aria-hidden="true"></iframe>
+<script>
+(function () {
+  var runBtn = document.getElementById('run'), fault = document.getElementById('fault');
+  var tbody = document.querySelector('#results tbody'), summary = document.getElementById('summary');
+  var frame = document.getElementById('home');
+  var token = 0, FAULT_SRC = 'https://www.googletagmanager.com/gtag/js';
+  var loaded = new Promise(function (ok) {
+    if (frame.contentDocument && frame.contentDocument.readyState === 'complete') ok(); else frame.addEventListener('load', ok);
+  });
+
+  function parse(c) {
+    var m = /rgba?\(([^)]+)\)/.exec(c); if (!m) return null;
+    var p = m[1].split(/[ ,\/]+/).filter(Boolean).map(parseFloat);
+    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+  }
+  function lum(c) {
+    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+  }
+  function over(top, bot) {
+    return { r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 };
+  }
+  function effBg(win, el) {
+    var layers = [], n = el;
+    while (n && n.nodeType === 1) {
+      var c = parse(win.getComputedStyle(n).backgroundColor);
+      if (c && c.a > 0) { layers.push(c); if (c.a === 1) break; }
+      n = n.parentElement;
+    }
+    var base = layers.length && layers[layers.length - 1].a === 1 ? layers.pop() : { r: 255, g: 255, b: 255, a: 1 };
+    while (layers.length) base = over(layers.pop(), base);
+    return base;
+  }
+  function kb(n) { return (n / 1024).toFixed(1) + ' KB'; }
+  function text(root) {
+    // noscript parses as text in a live page but as elements in DOMParser, so neither side counts it
+    var c = root.cloneNode(true);
+    c.querySelectorAll('noscript').forEach(function (n) { n.textContent = ''; });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  var checks = [
+    ['Page weight under 100 KB, fonts aside', function (win) {
+      var es = win.performance.getEntriesByType('navigation').concat(win.performance.getEntriesByType('resource'));
+      var own = 0;
+      es.forEach(function (e) {
+        if (/fonts\.(gstatic|googleapis)\.com|\.woff2?(\?|$)/.test(e.name)) return;
+        // a cached (304) response has transferSize ~ headers only, so take the body size when larger
+        own += Math.max(e.transferSize || 0, e.encodedBodySize || 0);
+      });
+      // no measurement is a failure, not a pass
+      if (!own) return [false, 'no measurement (served from file:// or timing blocked)'];
+      return [own <= 102400, kb(own)];
+    }],
+    ['No third-party scripts', function (win, doc) {
+      var n = 0, list = [];
+      doc.querySelectorAll('script[src]').forEach(function (s) {
+        var o; try { o = new URL(s.getAttribute('src'), win.location.href).origin; } catch (e) { o = '?'; }
+        if (o !== win.location.origin) { n++; list.push(o.replace(/^https?:\/\//, '')); }
+      });
+      return [n === 0, n + (n ? ' (' + list.join(', ') + ')' : '')];
+    }],
+    ['No requests to known trackers', function (win) {
+      var re = /google-analytics|googletagmanager|segment\.(io|com)|hotjar|posthog|mixpanel/i;
+      var n = win.performance.getEntriesByType('resource').filter(function (e) { return re.test(e.name); }).length;
+      return [n === 0, String(n)];
+    }],
+    ['Text contrast meets WCAG AA', function (win, doc) {
+      var min = Infinity, bad = 0, seen = 0;
+      doc.body.querySelectorAll('*').forEach(function (el) {
+        if (/^(SCRIPT|STYLE|NOSCRIPT|TITLE|DESC)$/i.test(el.tagName)) return;
+        var own = Array.prototype.some.call(el.childNodes, function (k) { return k.nodeType === 3 && k.nodeValue.trim(); });
+        if (!own || !el.getClientRects().length) return;
+        var cs = win.getComputedStyle(el); if (cs.visibility !== 'visible') return;
+        var fg = parse(el instanceof win.SVGElement ? cs.fill : cs.color); if (!fg) return;
+        var bg = effBg(win, el); fg = over(fg, bg);
+        var l1 = lum(fg), l2 = lum(bg), r = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+        var px = parseFloat(cs.fontSize), large = px >= 24 || (px >= 18.66 && parseInt(cs.fontWeight, 10) >= 700);
+        seen++; if (r < min) min = r; if (r < (large ? 3 : 4.5)) bad++;
+      });
+      if (!seen) return [false, 'no text measured'];
+      return [bad === 0, 'lowest ' + min.toFixed(2) + ':1 across ' + seen + ' elements' + (bad ? ', ' + bad + ' below AA' : '')];
+    }],
+    ['Images have alt text', function (win, doc) {
+      var imgs = doc.querySelectorAll('img'), bad = 0;
+      imgs.forEach(function (i) { if (!i.hasAttribute('alt')) bad++; });
+      return [bad === 0, imgs.length + (imgs.length === 1 ? ' image, ' : ' images, ') + bad + ' missing'];
+    }],
+    ['Links have names', function (win, doc) {
+      var as = doc.querySelectorAll('a[href]'), bad = 0;
+      as.forEach(function (a) { if (!(a.textContent.trim() || a.getAttribute('aria-label'))) bad++; });
+      return [bad === 0, as.length + ' links, ' + bad + ' unnamed'];
+    }],
+    ['Exactly one h1', function (win, doc) {
+      var n = doc.querySelectorAll('h1').length; return [n === 1, String(n)];
+    }],
+    // compares the live text with the HTML as served, so any text a script adds or changes shows up
+    ['Works without JavaScript', async function (win, doc) {
+      var served;
+      try { served = await (await fetch(win.location.href, { cache: 'no-store' })).text(); }
+      catch (e) { return [false, 'could not fetch the served HTML']; }
+      var main = new DOMParser().parseFromString(served, 'text/html').querySelector('main');
+      if (!main) return [false, 'no <main> in the served HTML'];
+      var ok = text(main) === text(doc.querySelector('main'));
+      return [ok, ok ? 'all text is in the served HTML' : 'a script changed the text'];
+    }]
+  ];
+
+  function setFault(on) {
+    var doc = frame.contentDocument, f = doc.querySelector('footer'), s = doc.querySelector('script[data-fault]');
+    f.style.color = on ? '#a3a3a3' : '';
+    if (on && !s) {
+      s = doc.createElement('script'); s.type = 'text/plain'; s.setAttribute('data-fault', ''); s.src = FAULT_SRC;
+      doc.body.appendChild(s);
+    } else if (!on && s) s.remove();
+  }
+  function addRow(name, ok, val) {
+    var tr = document.createElement('tr');
+    var th = document.createElement('th'); th.scope = 'row'; th.textContent = name;
+    var r = document.createElement('td'); r.className = ok ? 'pass' : 'fail'; r.textContent = ok ? 'Pass' : 'Fail';
+    var v = document.createElement('td'); v.textContent = val;
+    tr.append(th, r, v); tbody.appendChild(tr);
+  }
+  async function run() {
+    var me = ++token, still = document.getElementById('idle'); if (still) still.remove();
+    tbody.textContent = ''; summary.textContent = '';
+    await loaded;
+    var win = frame.contentWindow, doc = frame.contentDocument;
+    var calm = matchMedia('(prefers-reduced-motion: reduce)').matches, ms = 0, pass = 0;
+    for (var i = 0; i < checks.length; i++) {
+      if (me !== token) return;
+      var t0 = performance.now(), res;
+      try { res = await checks[i][1](win, doc); } catch (e) { res = [false, 'error: ' + e.message]; }
+      ms += performance.now() - t0;
+      if (res[0]) pass++;
+      addRow(checks[i][0], res[0], res[1]);
+      if (!calm) await new Promise(function (ok) { setTimeout(ok, 180); });
+    }
+    if (me !== token) return;
+    summary.textContent = pass + ' of ' + checks.length + ' checks passed in ' + ms.toFixed(1) + ' ms.';
+  }
+  runBtn.addEventListener('click', run);
+  fault.addEventListener('change', function () { loaded.then(function () { setFault(fault.checked); run(); }); });
+})();
+</script>
+</body>
+</html>
