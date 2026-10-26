@@ -4,10 +4,10 @@
 
 ## About
 
-- [Home page](https://matthewkyawmyint.com/): short bio, work history and contact.
+- [Home page](https://www.matthewkyawmyint.com/): short bio, work history and contact.
 - Current: founding engineer at Protagonist (Humanist Venture Studio), 2025 to now, building AI for colleges and their students.
 - Before: early-stage AI startups (contract), Workmaps (founding engineer), Everest AI (senior software engineer), Ethos, Amazon Web Services (AWS Console). Cofounded Japa (smart parking, UC Davis).
-- [Self-test](https://matthewkyawmyint.com/checks/): in-browser checks against the home page, with a switch that plants two bugs.
+- [Self-test](https://www.matthewkyawmyint.com/checks/): in-browser checks against the home page, with a switch that plants two bugs.
 
 ## Contact
 
